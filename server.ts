@@ -17,6 +17,11 @@ function handler(req: Request) {
         })
     }
     const nik = paths[2];
+    if (nik.length != 16) {
+        return new Response(JSON.stringify({
+            message: "Invalid NIK"
+        }), { status: 400 });
+    }
 
     try {
         const last = parseInt(nik[nik.length - 1]) % 2;
