@@ -1,7 +1,12 @@
 
 
 
-function handler(req: Request) {
+async function getRandomUser() {
+    const response = await fetch('https://randomuser.me/api/');
+    return await response.json();
+}
+
+async function handler(req: Request) {
     const url = new URL(req.url);
 
     if (req.method !== "GET") {
@@ -23,6 +28,7 @@ function handler(req: Request) {
         }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
+
     try {
         const last = parseInt(nik[nik.length - 1]) % 2;
         if (last != 0) {
@@ -31,11 +37,12 @@ function handler(req: Request) {
             }), { status: 404, headers: { "Content-Type": "application/json" } });
         }
 
+        const person = (await getRandomUser()).results[0];
         return new Response(JSON.stringify({
             nik: nik,
-            name: "person-" + nik,
-            gender: "male",
-            date_of_birth: "1995-01-01",
+            name: person.name.first + " " + person.name.last,
+            gender: person.gender,
+            date_of_birth: person.dob.date,
         }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error(err);
@@ -45,4 +52,3 @@ function handler(req: Request) {
 
 
 Deno.serve(handler);
-console.log("Server running on http://localhost:8000/");
