@@ -20,7 +20,7 @@ function handler(req: Request) {
     if (nik.length != 16) {
         return new Response(JSON.stringify({
             message: "Invalid NIK"
-        }), { status: 400 });
+        }), { status: 400, headers: { "Content-Type": "application/json" } });
     }
 
     try {
@@ -28,7 +28,7 @@ function handler(req: Request) {
         if (last != 0) {
             return new Response(JSON.stringify({
                 message: "NIK not found"
-            }), { status: 404 });
+            }), { status: 404, headers: { "Content-Type": "application/json" } });
         }
 
         return new Response(JSON.stringify({
@@ -36,7 +36,7 @@ function handler(req: Request) {
             name: "person-" + nik,
             gender: "male",
             date_of_birth: "1995-01-01",
-        }), { status: 200 });
+        }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error(err);
         return new Response("invalid request", { status: 400 });
