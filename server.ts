@@ -1,9 +1,18 @@
+const kv = await Deno.openKv();
 
 
+async function getRandomUser(nik: string) {
+    const cached = await kv.get(["nik", nik]);
+    console.log(cached);
+    if (cached && cached.value) {
+        return cached.value
+    }
 
-async function getRandomUser() {
     const response = await fetch('https://randomuser.me/api/');
-    return await response.json();
+    const json = (await response.json()).results[0];
+
+    await kv.set(["nik", nik], json, { expireIn: 60 * 60 * 24 });
+    return json
 }
 
 async function handler(req: Request) {
@@ -37,7 +46,7 @@ async function handler(req: Request) {
             }), { status: 404, headers: { "Content-Type": "application/json" } });
         }
 
-        const person = (await getRandomUser()).results[0];
+        const person = (await getRandomUser(nik));
         return new Response(JSON.stringify({
             nik: nik,
             name: person.name.first + " " + person.name.last,
