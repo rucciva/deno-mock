@@ -3,7 +3,6 @@ const kv = await Deno.openKv();
 
 async function getRandomUser(nik: string) {
     const cached = await kv.get(["nik", nik]);
-    console.log(cached);
     if (cached && cached.value) {
         return cached.value
     }
